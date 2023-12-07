@@ -1,0 +1,80 @@
+version: "3.8"
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: "rabbitmq"
+    restart: unless-stopped
+    env_file: ./.env
+    environment:
+      - RABBITMQ_DEFAULT_USER=$RABBITMQ_USER
+      - RABBITMQ_DEFAULT_PASS=$RABBITMQ_PASSWORD
+    volumes:
+      - ./volumes/rabbitmq-data:/var/lib/rabbitmq/
+    ports:
+      - $AMQP_RABBITMQ_PORT:$AMQP_RABBITMQ_PORT
+      - $HTTP_RABBITMQ_PORT:$HTTP_RABBITMQ_PORT
+
+  mysqldb:
+    image: mysql:5.7
+    container_name: "mysqldb"
+    restart: unless-stopped
+    env_file: ./.env
+    environment:
+      - MYSQL_DATABASE=$MYSQL_DATABASE
+      - MYSQL_USER=$MYSQL_USER
+      - MYSQL_PASSWORD=$MYSQL_PASSWORD
+      - MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD
+    ports:
+      - $MYSQL_PORT:$MYSQL_PORT
+    volumes:
+      - ./volumes/database:/var/lib/mysql
+
+  app_users_producer:
+    depends_on:
+      - rabbitmq
+    build: ./producers/users-producer
+    container_name: "app_users_producer"
+    restart: unless-stopped
+    env_file: ./.env
+    ports:
+      - $NODE_USERS_PRODUCER_PORT:$NODE_USERS_PRODUCER_PORT
+    expose:
+      - $NODE_USERS_PRODUCER_PORT
+    environment:
+      - RABBIMQ_HOST=rabbitmq
+      - AMQP_RABBITMQ_PORT=$AMQP_RABBITMQ_PORT
+      - HTTP_RABBITMQ_PORT=$HTTP_RABBITMQ_PORT
+      - RABBITMQ_DEFAULT_USER=$RABBITMQ_USER
+      - RABBITMQ_DEFAULT_PASS=$RABBITMQ_PASSWORD
+      - NODE_USERS_PRODUCER_PORT=$NODE_USERS_PRODUCER_PORT
+      - NODE_APP_HOST=$NODE_APP_HOST
+    stdin_open: true
+    tty: true
+
+  app_users_consumer:
+    depends_on:
+      - rabbitmq
+      - mysqldb
+    build: ./consumers/users-consumer
+    container_name: "app_users_consumer"
+    restart: unless-stopped
+    env_file: ./.env
+    ports:
+      - $NODE_USERS_CONSUMER_PORT:$NODE_USERS_CONSUMER_PORT
+    expose:
+      - $NODE_USERS_CONSUMER_PORT
+    environment:
+      - MYSQL_HOST=mysqldb
+      - RABBIMQ_HOST=rabbitmq
+      - AMQP_RABBITMQ_PORT=$AMQP_RABBITMQ_PORT
+      - HTTP_RABBITMQ_PORT=$HTTP_RABBITMQ_PORT
+      - RABBITMQ_DEFAULT_USER=$RABBITMQ_USER
+      - RABBITMQ_DEFAULT_PASS=$RABBITMQ_PASSWORD
+      - MYSQL_DATABASE=$MYSQL_DATABASE
+      - MYSQL_USER=$MYSQL_USER
+      - MYSQL_PASSWORD=$MYSQL_PASSWORD
+      - MYSQL_PORT=$MYSQL_PORT
+      - NODE_USERS_CONSUMER_PORT=$NODE_USERS_CONSUMER_PORT
+      - NODE_APP_HOST=$NODE_APP_HOST
+    stdin_open: true
+    tty: true

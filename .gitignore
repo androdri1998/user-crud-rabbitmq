@@ -1,0 +1,4 @@
+volumes/
+.env
+dist/
+node_modules/
