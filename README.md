@@ -63,15 +63,6 @@ Due RabbitMQ require a while to setup service, consumer and producer can became 
 ### Access producer API
 
 - API will be available at host `localhost` and port `[NODE_USERS_PRODUCER_PORT]`.
-- credentials:
-
-```
-MYSQL_USER=[MYSQL_USER]
-MYSQL_PASSWORD=[MYSQL_PASSWORD]
-MYSQL_ROOT_PASSWORD=[MYSQL_ROOT_PASSWORD]
-```
-
-`to access as a root user use root user and [MYSQL_ROOT_PASSWORD]`
 
 ### Routes
 
@@ -94,11 +85,41 @@ BODY {}
 
 ### Access RabbitMQ
 
-- It's possible to see RabbitMQ UI using `RABBITMQ_USER` and `RABBITMQ_PASSWORD` at url `http://localhost:[HTTP_RABBITMQ_PORT]`.
+It's possible to see RabbitMQ UI using `RABBITMQ_USER` and `RABBITMQ_PASSWORD` at url `http://localhost:[HTTP_RABBITMQ_PORT]`.
+
+- Exchanges available:
+  users exchange type direct.
+- Queues available:
+  `create_users` with routing key users.create.
+  `delete_users` with routing key users.delete.
+  `dead_letter_queue` with routing key users.dead_letter_queue.
 
 ### Access MySQL
 
-- An application to see database it's needed, url to connect it's `http://localhost:[MYSQL_PORT]`.
+- Database structure:
+
+```
+Table user
+Fields
+  id
+  name
+  description
+  status
+  created_at
+  updated_at
+```
+
+An application to see database it's needed, host to connect it's `localhost` and port it's `[MYSQL_PORT]`.
+
+- Credentials:
+
+```
+MYSQL_USER=[MYSQL_USER]
+MYSQL_PASSWORD=[MYSQL_PASSWORD]
+MYSQL_ROOT_PASSWORD=[MYSQL_ROOT_PASSWORD]
+```
+
+`to access as a root user use root user and [MYSQL_ROOT_PASSWORD]`
 
 ## Stop project
 
@@ -115,7 +136,7 @@ BODY {}
 ### To update docker images with services changes
 
 Run this commands
-  
+
 1. `$ docker-compose down`
 2. `$ docker-compose build`
 3. `$ docker-compose up -d`
