@@ -7,8 +7,7 @@
     "test": "jest",
     "start": "tsc && node dist/index.js",
     "build": "tsc",
-    "dev": "ts-node-dev index.ts",
-    "migration:init": "npx prisma migrate dev --name init"
+    "dev": "ts-node-dev index.ts"
   },
   "keywords": [],
   "author": "",

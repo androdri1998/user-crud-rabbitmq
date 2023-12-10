@@ -140,3 +140,27 @@ Run this commands
 1. `$ docker-compose down`
 2. `$ docker-compose build`
 3. `$ docker-compose up -d`
+
+## Available Commands
+
+### users-consumer
+
+- `$ npm run test`
+  To run unit tests
+- `$ npm start`
+  To run application
+- `$ npm run build`
+  To build application
+- `$ npm run dev`
+  To run in dev mode watching changes
+
+### users-producer
+
+- `$ npm run test`
+  To run unit tests
+- `$ npm start`
+  To run application
+- `$ npm run build`
+  To build application
+- `$ npm run dev`
+  To run in dev mode watching changes
